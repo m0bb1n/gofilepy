@@ -6,7 +6,7 @@ A true wrapper for Gofile's REST API.
 
 Install Gofilepy with pip
 ```bash
-  pip install gofilepy
+  pip install gofilepy-api
 ```
 
 
