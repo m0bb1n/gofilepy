@@ -4,9 +4,9 @@
 
 ## Installation
 
-Install Gofilepy with pip (NOT ACTIVE YET)
+Install Gofilepy with pip
 ```bash
-  pip install gofilepy
+  pip install gofilepy-api
 ```
     
 ## Usage/Examples
