@@ -1,0 +1,5 @@
+gofilepy/__pycache__
+__pycache__
+dist
+gofilepy-api.egg-info
+help.txt
