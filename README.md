@@ -33,13 +33,6 @@ from gofilepy import GofileClient
 
 client = GofileClient(token="") #Get token from gofile.io.  Only premium accounts have access
 
-#Free users can this function
-file = client.upload(file=open("./test.txt", "rb"))
-
-print(file.name)
-print(file.page_link) #View and download file at this link
-
-#BFunctions shown below are premium users only
 account = client.get_account()
 
 print(account.email)
@@ -57,11 +50,13 @@ child.content_id in root.children_ids # = false because it hasn't been updated
 root.reload() #Gets any new changes/updates to the folder
 child.content_id in root.children_ids # = true after root folder has been reloaded
 
-child_copy = client.copy_content(child.content_id, parent_id=root.content_id) #Makes a duplicate of child folder in root folder
+
+#Copying content (files & folders)
+client.copy_content(child.content_id, parent_id=root.content_id) #Duplicates folder
 
 root.reload() #Now root.children_ids has another id
 
-child_copy.delete() #Deletes folder
+child.delete() #Deletes folder
 
 
 ```
