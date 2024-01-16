@@ -45,14 +45,14 @@ child = client.create_folder("NEW_FOLDER", parent_id=root.content_id)
 child.set_option("description", "New folder created with gofilepy") #More options available https://gofile.io/api
 
 
-# Updating changes
+# Registering changes to local variable
 child.content_id in root.children_ids # = false because it hasn't been updated
 root.reload() #Gets any new changes/updates to the folder
 child.content_id in root.children_ids # = true after root folder has been reloaded
 
 
-#Copying content (files & folders)
-client.copy_content(child.content_id, parent_id=root.content_id) #Duplicates folder
+# Copying content (files & folders)
+child.copy(root.content_id) #Duplicates folder in same directory
 
 root.reload() #Now root.children_ids has another id
 
