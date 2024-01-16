@@ -42,7 +42,7 @@ root_folder_id = account.root_id
 root = client.get(root_folder_id)
 
 child = client.create_folder("NEW_FOLDER", parent_id=root.content_id)
-child.set_option("password", "secret_password") #Set password to "secret_password".  More options available https://gofile.io/api
+child.set_option("description", "New folder created with gofilepy") #More options available https://gofile.io/api
 
 
 # Updating changes
