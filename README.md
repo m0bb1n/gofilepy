@@ -1,10 +1,11 @@
 
 # Gofilepy - Unofficial Python wrapper for Gofile API
 
+![PyPI Package](https://badge.fury.io/py/gofilepy-api.svg)
 [![Downloads](https://static.pepy.tech/badge/gofilepy-api)](https://pepy.tech/project/gofilepy-api)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/gofilepy-api)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/python-binance)
 ![PyPI - License](https://img.shields.io/pypi/l/gofilepy-api)
-
 
 A true wrapper for Gofile's REST API.
 ## Installation
@@ -39,12 +40,10 @@ from gofilepy.exceptions import GofileAPIAuthenticationError
 
 client = GofileClient(token="") #Get token from gofile.io.  Only premium accounts have access
 
-account = client.get_account()
+print(client.account.email)
+print(client.account.tier)
 
-print(account.email)
-print(account.tier)
-
-root_folder_id = account.root_id
+root_folder_id = client.account.root_id
 root = client.get(root_folder_id)
 
 child = client.create_folder("NEW_FOLDER", parent_id=root.content_id)

@@ -16,5 +16,10 @@ setuptools.setup(
     packages = setuptools.find_packages(),
     install_requires = [
         'requests'
+    ],
+    classifiers = [
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ]
 )
