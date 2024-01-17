@@ -15,6 +15,10 @@ Install Gofilepy with pip
   pip install gofilepy-api
 ```
 
+## Documentation
+- [gofilepy docs/reference](https://m0bb1n.github.io/gofilepy/)
+- [Gofile REST API reference](https://gofile.io/api)
+
 
 ## Usage/Examples (Free Users)
 
@@ -31,14 +35,13 @@ print(file.page_link) #View and download file at this link
 
 ```
 
-
 ## Usage/Examples (Premium Users)
 
 ```python
 from gofilepy import GofileClient
 from gofilepy.exceptions import GofileAPIAuthenticationError
 
-client = GofileClient(token="") #Get token from gofile.io.  Only premium accounts have access
+client = GofileClient(token="") #Get token from gofile.io.
 
 print(client.account.email)
 print(client.account.tier)
@@ -68,7 +71,7 @@ child.delete() #Deletes folder
 
 
 ## Links
-
+ - [Gofilepy docs](https://m0bb1n.github.io/gofilepy/)
  - [Gofile REST API reference](https://gofile.io/api)
  - [Gofile Premium ](https://gofile.io/premium)
  - [Donate to Gofile](https://www.buymeacoffee.com/gofile)

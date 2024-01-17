@@ -6,6 +6,7 @@ from .exceptions import GofileAPIException
 
 GofileFile = None
 GofileFolder = None
+GofileAccount = None
 
 class GofileClient (object):
     server = None
@@ -117,9 +118,11 @@ class GofileClient (object):
         return GofileContent.__init_from_resp__(resp, client=self)
 
     def get_folder(self, *args, **kwargs):
+        """Retrieves folder using content_id"""
         return self.get(*args, **kwargs)
 
     def delete(self, *content_ids: str, token: str = None):
+        """Calls Gofile API to delete provided content_ids."""
         token = self._get_token(token)
         data = {"contentsId": ",".join(content_ids), "token": token}
         resp = requests.delete(GofileClient.API_ROUTE_DELETE_CONTENT_URL, data=data)
@@ -134,7 +137,10 @@ class GofileClient (object):
         return resp, data
 
 
-    def get_account(self, token: str = None):
+    def get_account(self, token: str = None) -> GofileAccount:
+        """If token is provided returns specified account, otherwise token defaults to self.token.
+          \If token is default self.account is updated"""
+        token = self._get_token(token)
         resp, data = self._get_account_raw_resp(token=token)
         account = GofileAccount.load_from_dict(data)
         account._client = self
@@ -146,6 +152,7 @@ class GofileClient (object):
         return account
 
     def set_content_option(self, content_id: str, option: str, value, token: str = None):
+        """Sets content option like 'description', 'public', etc (more at gofile.io/api).  Note that folder and file content have different options"""
         token = self._get_token(token)
 
         if type(value) == bool: #api expects bools to be string
@@ -166,6 +173,7 @@ class GofileClient (object):
 
 
     def copy_content(self, *content_ids: str, parent_id: str = None, token: str = None):
+        """Copy provided content_ids to destination folder's content_id.  Currently returns None because api doesn't return any information.  Will have to query parent folder"""
         if not parent_id:
             raise ValueError("Must pass a parent folder id: parent_id=None")
 
@@ -187,6 +195,7 @@ class GofileClient (object):
         """
 
     def create_folder(self, name: str, parent_id: str, token: str = None):
+        """Creates folder in specified parent folder's content_id"""
         token = self._get_token(token)
 
         data = {
@@ -202,6 +211,23 @@ class GofileClient (object):
         return GofileContent.__init_from_resp__(resp, client=self) 
 
 class GofileAccount (object):
+    token: str
+    """Token of account, found on Gofile.io"""
+    email: str
+    """Email address of account"""
+    tier: str
+    """Tier of GofileAccount either Standard or Premium"""
+    root_id: str
+    """Root folder's content_id of Gofile account"""
+    folder_cnt: int
+    """Number of children folders"""
+    file_cnt: int
+    """Number of children files"""
+    total_size: int
+    """Total size of Accounts' contents"""
+    total_download_cnt: int
+    """Total download count of Accounts' contents"""
+
     def __init__(self, token: str = None):
         self.token = token
         self.email = None
@@ -237,6 +263,23 @@ class GofileAccount (object):
         self._raw = data
 
 class GofileContent (object):
+    name: str
+    """Name of content"""
+    content_id: str
+    """Gofile API's unique content id"""
+    parent_id: str
+    """Content_id of parent folder"""
+    _type: str
+    """GofileContent subtypes, either 'file', 'folder' or 'unknown'."""
+    is_file_type: bool
+    """If GofileContent is a file"""
+    is_folder_type: bool
+    """If GofileContent is a folder"""
+    is_unknown_type: bool
+    """If GofileContent is unknown (call reload() to update)"""
+    is_deleted: bool
+    """If content is deleted (will only register if called by it's own method delete())"""
+
     def __init__(self, content_id: str, parent_id: str, _type: str = None, client: GofileClient = None):
         self.content_id = content_id
         self.parent_id = parent_id
@@ -248,6 +291,7 @@ class GofileContent (object):
         self.is_folder_type = _type == "folder"
         self.is_unknown_type = _type == None
         self.name = None
+        self.time_created = None
         self.is_deleted = False
 
     def __repr__ (self) -> str:
@@ -258,21 +302,25 @@ class GofileContent (object):
         return "<Gofile {}: content_id={} name={}>".format(_type.upper(), self.content_id, self.name)
 
     def delete (self) -> None:
+        """Deletes itself.  When called successfully is_deleted = True"""
         self._client.delete(self.content_id)
         self.is_deleted = True
 
     def copy_to (self, dest_id: str) -> None:
+        """Copies itself to destination folder's content_id"""
         self._client.copy_content(self.content_id, parent_id=dest_id)
 
     def copy (self, dest_id: str) -> None:
         self.copy_to(dest_id)
 
     def set_option(self, option: str, value, reload: bool = True) -> None:
+        """Sets options for itself.  Full option list available at gofile.io/api"""
         self._client.set_content_option(self.content_id, option, value)
         if reload:
             self.reload() #reload to get up to date information
 
     def reload (self):
+        """Reloads any new updates to content.  If is_unknown_type = True then reload() returns updated content"""
         if self.is_folder_type or (self.is_unknown_type and self.parent_id == None):
             resp, data = self._client._get_content_raw_resp(self.content_id)
 
@@ -317,6 +365,23 @@ class GofileContent (object):
         return content
 
 class GofileFile (GofileContent):
+    time_created: int
+    """Time that file was uploaded"""
+    size: int
+    """Size of file (in bytes)"""
+    download_cnt: int
+    """Amount of times the file has been downloaded"""
+    mimetype: str
+    """Mimetype of file"""
+    server: str
+    """subdomain server from where file will be downloaded (Premium)"""
+    direct_link: str
+    """Direct link to download file (Premium)"""
+    page_link: str
+    """Page link to view and get download url for file"""
+    md5: str
+    """Hash function of file for verification"""
+
     def __init__(self, content_id: str, parent_id: str, client: GofileClient = None):
         super().__init__(content_id, parent_id, _type="file", client=client)
         self.name = None 
@@ -362,6 +427,25 @@ class GofileFile (GofileContent):
             raise Exception("Direct link needed - only for premium users") 
 
 class GofileFolder (GofileContent):
+    children: list[GofileContent]
+    """Children of folder, either GofileFolder or GofileFile type"""
+    children_ids: list[str]
+    """List of childrens' content ids"""
+    time_created: int
+    """Time folder was created"""
+    total_size: int
+    """Total size of folders' contents (in bytes)"""
+    is_public: bool
+    """Is folder publicly accessible"""
+    is_owner: bool
+    """If caller is folder owner"""
+    is_root: bool
+    """If folder is root folder"""
+    has_password: bool
+    """If folder is password protected"""
+    code: str
+    """Folder shortcode to access from the browser"""
+
     def __init__(self, name: str, content_id: str, parent_id: str, client: GofileClient = None):
         super().__init__(content_id, parent_id, _type="folder", client=client)
         self.name = name
