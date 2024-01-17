@@ -1,6 +1,11 @@
 
 # Gofilepy - Unofficial Python wrapper for Gofile API
 
+[![Downloads](https://static.pepy.tech/badge/gofilepy-api)](https://pepy.tech/project/gofilepy-api)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/gofilepy-api)
+![PyPI - License](https://img.shields.io/pypi/l/gofilepy-api)
+
+
 A true wrapper for Gofile's REST API.
 ## Installation
 
@@ -30,6 +35,7 @@ print(file.page_link) #View and download file at this link
 
 ```python
 from gofilepy import GofileClient
+from gofilepy.exceptions import GofileAPIAuthenticationError
 
 client = GofileClient(token="") #Get token from gofile.io.  Only premium accounts have access
 
