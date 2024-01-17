@@ -4,7 +4,7 @@
 ![PyPI Package](https://badge.fury.io/py/gofilepy-api.svg)
 [![Downloads](https://static.pepy.tech/badge/gofilepy-api)](https://pepy.tech/project/gofilepy-api)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/gofilepy-api)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/python-binance)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gofilepy-api)
 ![PyPI - License](https://img.shields.io/pypi/l/gofilepy-api)
 
 A true wrapper for Gofile's REST API.
