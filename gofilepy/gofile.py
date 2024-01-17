@@ -31,7 +31,8 @@ class GofileClient (object):
         self.token = token
         self.server = GofileClient.get_best_server()
         self.verbose = verbose
-        if get_account:
+
+        if get_account and token:
             self.get_account()
 
     @staticmethod
