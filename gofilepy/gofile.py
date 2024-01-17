@@ -223,6 +223,8 @@ class GofileAccount (object):
         self.total_size = data.get("totalSize", self.total_size)
         self.total_download_cnt = data.get("totalDownloadCount", self.total_download_cnt)
 
+        self._raw = data
+
     @staticmethod
     def load_from_dict(data: dict):
         account = GofileAccount(data["token"])
@@ -248,19 +250,22 @@ class GofileContent (object):
         self.name = None
         self.is_deleted = False
 
-    def __repr__ (self):
+    def __repr__ (self) -> str:
         _type = self._type
         if not _type:
             _type = "Unknown"
 
         return "<Gofile {}: content_id={} name={}>".format(_type.upper(), self.content_id, self.name)
 
-    def delete (self):
+    def delete (self) -> None:
         self._client.delete(self.content_id)
         self.is_deleted = True
 
-    def copy (self, dest_id: str) -> None:
+    def copy_to (self, dest_id: str) -> None:
         self._client.copy_content(self.content_id, parent_id=dest_id)
+
+    def copy (self, dest_id: str) -> None:
+        self.copy_to(dest_id)
 
     def set_option(self, option: str, value, reload: bool = True) -> None:
         self._client.set_content_option(self.content_id, option, value)
@@ -337,6 +342,8 @@ class GofileFile (GofileContent):
         self.direct_link = data.get("link", self.direct_link)
         self.page_link = data.get("downloadPage", self.page_link) 
 
+        self._raw = data
+
     @staticmethod
     def load_from_dict(data: dict, client: GofileClient = None):
         file = GofileFile(data["id"], data["parentFolder"], client=client)
@@ -407,7 +414,7 @@ class GofileFolder (GofileContent):
 
 
     @staticmethod
-    def load_from_dict(data: dict, client: GofileClient = None):
+    def load_from_dict(data: dict, client: GofileClient = None) -> GofileFolder:
         parent_id = data.get("parentFolder", None)
         folder = GofileFolder(data["name"], data["id"], parent_id, client=client)
         folder.override_from_dict(data)
@@ -415,6 +422,6 @@ class GofileFolder (GofileContent):
 
         return folder
 
-    def upload(self, file: BufferedReader = None, path: str = None):
+    def upload(self, file: BufferedReader = None, path: str = None) -> GofileFile:
         return self._client.upload(file=file, path=path, parent_id=self.content_id)
 

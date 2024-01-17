@@ -52,7 +52,7 @@ child.content_id in root.children_ids # = true after root folder has been reload
 
 
 # Copying content (files & folders)
-child.copy(root.content_id) #Duplicates folder in same directory
+child.copy_to(child.parent_id) #Duplicates folder in same directory
 
 root.reload() #Now root.children_ids has another id
 
