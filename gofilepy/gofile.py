@@ -1,6 +1,7 @@
 import requests
 import os
 from io import BufferedReader
+from .exceptions import GofileAPIException
 
 
 GofileFile = None
@@ -43,14 +44,9 @@ class GofileClient (object):
             got = data.get('data')
 
 
-        if api_status != 'ok':
-            raise Exception('Gofile api error: {}'.format(api_status))
-
-        if code != 200:
-            raise Exception('GofileClient could not get data [{}]'.format(code))
-
+        if api_status != 'ok' or code != 200:
+            raise GofileAPIException.__init_from_resp__(resp)
         return got
-
 
     def get_best_upload_url(self):
         return self.API_STORE_FORMAT.format(self.server, self.BASE_DOMAIN, self.API_ROUTE_UPLOAD_CONTENT_PATH)
@@ -117,7 +113,8 @@ class GofileClient (object):
         resp,data = self._get_content_raw_resp(content_id, token=token)
         return GofileContent.__init_from_resp__(resp, client=self)
 
-
+    def get_folder(self, *args, **kwargs):
+        return self.get(*args, **kwargs)
 
     def delete(self, *content_ids: str, token: str = None):
         token = self._get_token(token)
