@@ -27,10 +27,12 @@ class GofileClient (object):
 
     API_STORE_FORMAT = "https://{}.{}/{}"
 
-    def __init__(self, token: str = None, verbose: bool = False):
+    def __init__(self, token: str = None, get_account: bool = True, verbose: bool = False):
         self.token = token
         self.server = GofileClient.get_best_server()
         self.verbose = verbose
+        if get_account:
+            self.get_account()
 
     @staticmethod
     def handle_response(resp: requests.Response):
