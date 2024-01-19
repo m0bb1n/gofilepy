@@ -62,8 +62,19 @@ class GofileClient (object):
         return GofileClient.handle_response(resp)['server']
 
 
-    def download_file(self, file, save_path):
-        raise NotImplemented
+    def _download_file_from_direct_link(self, direct_link, out_dir="./"):
+        fn = direct_link.rsplit('/', 1)[1]
+        resp = requests.get(direct_link, stream=True, allow_redirects=None)
+        if resp.status_code != 200:
+            raise GofileApiException("Could not download file", code=resp.status_code)
+
+        out_path = os.path.join(out_dir, fn)
+        with open(out_path, 'wb') as f:
+            for chunk in resp.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+        return out_path
+
 
     def _get_token(self, token):
         if not token:
@@ -72,7 +83,7 @@ class GofileClient (object):
                 token = ""
         return token
 
-    def upload(self, file: BufferedReader=None, path: str=None, parent_id: str=None, token: str=None) -> GofileFile:
+    def upload(self, path: str=None, file: BufferedReader=None, parent_id: str=None, token: str=None) -> GofileFile:
         if not file and not path:
             raise ValueError("GofileClient.upload() requires a BufferedReader or file path")
 
@@ -98,7 +109,7 @@ class GofileClient (object):
         got["id"] = got.get("fileId", None)
         got["name"] = got.get("fileName", None)
 
-        return  GofileFile.load_from_dict(got, client=self)
+        return  GofileFile._load_from_dict(got, client=self)
     
 
     def _get_content_raw_resp(self, content_id: str, token: str = None):
@@ -142,7 +153,7 @@ class GofileClient (object):
           \If token is default self.account is updated"""
         token = self._get_token(token)
         resp, data = self._get_account_raw_resp(token=token)
-        account = GofileAccount.load_from_dict(data)
+        account = GofileAccount._load_from_dict(data)
         account._client = self
         account._raw = data
 
@@ -239,7 +250,7 @@ class GofileAccount (object):
         self.total_download_cnt = None
         self._raw = {}
 
-    def override_from_dict(self, data: dict) -> None:
+    def _override_from_dict(self, data: dict) -> None:
         self.token = data.get("token", self.token)
         self.email = data.get("email", self.email)
         self.tier = data.get("tier", self.tier)
@@ -252,14 +263,14 @@ class GofileAccount (object):
         self._raw = data
 
     @staticmethod
-    def load_from_dict(data: dict):
+    def _load_from_dict(data: dict):
         account = GofileAccount(data["token"])
-        account.override_from_dict(data)
+        account._override_from_dict(data)
         return account
     
     def reload(self):
         resp, data = self._client._get_account_raw_resp(token=self.token)
-        self.override_from_dict(data)
+        self._override_from_dict(data)
         self._raw = data
 
 class GofileContent (object):
@@ -328,7 +339,7 @@ class GofileContent (object):
                 content = GofileContent.__init_from_resp__(resp, client=self._client)
 
             elif self.is_folder_type:
-                self.override_from_dict(data)
+                self._override_from_dict(data)
                 return self
         
         elif (self.is_unknown_type or self.is_file_type) and self.parent_id:
@@ -339,7 +350,7 @@ class GofileContent (object):
                 content = GofileContent.__init_from_resp__({"data": content_data}, client=self._client)
 
                 if self.is_file_type:
-                    self.override_from_dict(content_data)
+                    self._override_from_dict(content_data)
 
             return content
 
@@ -356,9 +367,9 @@ class GofileContent (object):
         content = None
 
         if _type == "file":
-            content = GofileFile.load_from_dict(got, client=client)
+            content = GofileFile._load_from_dict(got, client=client)
         elif _type == "folder":
-            content = GofileFolder.load_from_dict(got, client=client)
+            content = GofileFolder._load_from_dict(got, client=client)
         else:
             raise NotImplemented
 
@@ -394,7 +405,7 @@ class GofileFile (GofileContent):
         self.page_link = None
         self.md5 = None
 
-    def override_from_dict(self, data: dict) -> None:
+    def _override_from_dict(self, data: dict) -> None:
         self.content_id = data.get("id", self.content_id)
         self.parent_id = data.get("parentFolder", self.parent_id)
         self.name = data.get("name", self.name)
@@ -403,28 +414,33 @@ class GofileFile (GofileContent):
         self.download_cnt = data.get("downloadCount", self.download_cnt)
         self.mimetype = data.get("mimetype", self.mimetype)
         self.md5 = data.get("md5", self.md5)
-        self.server = data.get("serverChoosen", self.server)
-        self.direct_link = data.get("link", self.direct_link)
+        self.server = data.get("serverChoosen", None)
+        self.direct_link = self._get_direct_link_from_link(data.get("link", None))
         self.page_link = data.get("downloadPage", self.page_link) 
 
         self._raw = data
 
     @staticmethod
-    def load_from_dict(data: dict, client: GofileClient = None):
+    def _get_direct_link_from_link (link):
+        idx = link.find("download/") + len("download/")-1
+        return link[:idx] + "/direct/" + link[idx+1:]
+
+    @staticmethod
+    def _load_from_dict(data: dict, client: GofileClient = None):
         file = GofileFile(data["id"], data["parentFolder"], client=client)
-        file.override_from_dict(data)
+        file._override_from_dict(data)
         file._raw = data
         return file
 
-    def download(self, save_path: str):
+    def download(self, out_dir: str = "./") -> str:
+        """Downloads file to passed dir (default is working directory). Note: The option directLink
+          \needs to be True (Premium)"""
+
         if self.direct_link:
-            resp = requests.get(self.direct_link)
-            with open(save_path, 'wb') as f:
-                for chunk in resp.iter_content(chunk_size=1024):
-                    if chunk:
-                        f.write(chunk)
+            return self._client._download_file_from_direct_link(self.direct_link, out_dir=out_dir)
+
         else:
-            raise Exception("Direct link needed - only for premium users") 
+            raise Exception("Direct link needed - set option directLink=True (only for premium users)") 
 
 class GofileFolder (GofileContent):
     children: list[GofileContent]
@@ -478,7 +494,7 @@ class GofileFolder (GofileContent):
         return children
 
 
-    def override_from_dict(self, data: dict) -> None:
+    def _override_from_dict(self, data: dict) -> None:
         self.content_id = data.get("id", self.content_id)
         self.parent_id = data.get("parentFolder", self.parent_id)
         self.name = data.get("name", self.name)
@@ -498,14 +514,14 @@ class GofileFolder (GofileContent):
 
 
     @staticmethod
-    def load_from_dict(data: dict, client: GofileClient = None) -> GofileFolder:
+    def _load_from_dict(data: dict, client: GofileClient = None) -> GofileFolder:
         parent_id = data.get("parentFolder", None)
         folder = GofileFolder(data["name"], data["id"], parent_id, client=client)
-        folder.override_from_dict(data)
+        folder._override_from_dict(data)
         folder._raw = data
 
         return folder
 
-    def upload(self, file: BufferedReader = None, path: str = None) -> GofileFile:
+    def upload(self, path: str = None, file: BufferedReader = None) -> GofileFile:
         return self._client.upload(file=file, path=path, parent_id=self.content_id)
 
