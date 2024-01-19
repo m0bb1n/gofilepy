@@ -19,6 +19,9 @@ class GofileAPIException (Exception):
 
         elif status == "error-notFound":
             return GofileAPIContentNotFoundError(status)
+
+        elif status == "error-notPremium":
+            return GofileAPINotPremiumError(status)
         
         return cls(status, code) 
 
@@ -40,7 +43,11 @@ class GofileAPIContentNotFoundError (GofileAPIException):
         super().__init__(msg, code)
 
 class GofileAPINotOwnerError (GofileAPIException):
-    """Gofile API throws not own of content - content is owned by another user"""
+    """Gofile API throws not owner of content - content is owned by another user"""
     def __init__(self, msg: str, code: int = 403):
         super().__init__(msg, code)
 
+class GofileAPINotPremiumAccountError (GofileAPIException):
+    """Gofile API throws not premium account error - upgrade at gofile.io/premium"""
+    def __init__(self, msg: str, code: int = 403):
+        super().__init__(msg, code)
