@@ -72,9 +72,19 @@
                 </ul>
 
             </li>
+            <li>
+                    <a class="class" href="#GofileAPINotPremiumAccountError">GofileAPINotPremiumAccountError</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#GofileAPINotPremiumAccountError.__init__">GofileAPINotPremiumAccountError</a>
+                        </li>
+                </ul>
+
+            </li>
     </ul>
 
 
+            <footer>maintained by m0bb1n with &lt;3</footer>
 
         <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev" target="_blank">
             built with <span class="visually-hidden">pdoc</span><img
@@ -114,30 +124,38 @@
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
 </span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;error-notFound&quot;</span><span class="p">:</span>
 </span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>            <span class="k">return</span> <span class="n">GofileAPIContentNotFoundError</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>        
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> 
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="k">def</span> <span class="fm">__repr__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;error-notPremium&quot;</span><span class="p">:</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>            <span class="k">return</span> <span class="n">GofileAPINotPremiumError</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>        
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> 
 </span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="k">def</span> <span class="fm">__str__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="k">def</span> <span class="fm">__repr__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
 </span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="k">class</span> <span class="nc">GofileAPIAuthenticationError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws an authentication error - token is not provided or invalid&quot;&quot;&quot;</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">401</span><span class="p">):</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="k">class</span> <span class="nc">GofileAPIContentNotFoundError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws content not found - content_id is invalid&quot;&quot;&quot;</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span><span class="p">):</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
-</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a><span class="k">class</span> <span class="nc">GofileAPINotOwnerError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
-</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws not own of content - content is owned by another user&quot;&quot;&quot;</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="k">def</span> <span class="fm">__str__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="k">class</span> <span class="nc">GofileAPIAuthenticationError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws an authentication error - token is not provided or invalid&quot;&quot;&quot;</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">401</span><span class="p">):</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="k">class</span> <span class="nc">GofileAPIContentNotFoundError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws content not found - content_id is invalid&quot;&quot;&quot;</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span><span class="p">):</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="k">class</span> <span class="nc">GofileAPINotOwnerError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws not owner of content - content is owned by another user&quot;&quot;&quot;</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="k">class</span> <span class="nc">GofileAPINotPremiumAccountError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws not premium account error - upgrade at gofile.io/premium&quot;&quot;&quot;</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -173,14 +191,17 @@
 </span><span id="GofileAPIException-20"><a href="#GofileAPIException-20"><span class="linenos">20</span></a>
 </span><span id="GofileAPIException-21"><a href="#GofileAPIException-21"><span class="linenos">21</span></a>        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;error-notFound&quot;</span><span class="p">:</span>
 </span><span id="GofileAPIException-22"><a href="#GofileAPIException-22"><span class="linenos">22</span></a>            <span class="k">return</span> <span class="n">GofileAPIContentNotFoundError</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-</span><span id="GofileAPIException-23"><a href="#GofileAPIException-23"><span class="linenos">23</span></a>        
-</span><span id="GofileAPIException-24"><a href="#GofileAPIException-24"><span class="linenos">24</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> 
-</span><span id="GofileAPIException-25"><a href="#GofileAPIException-25"><span class="linenos">25</span></a>
-</span><span id="GofileAPIException-26"><a href="#GofileAPIException-26"><span class="linenos">26</span></a>    <span class="k">def</span> <span class="fm">__repr__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="GofileAPIException-27"><a href="#GofileAPIException-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+</span><span id="GofileAPIException-23"><a href="#GofileAPIException-23"><span class="linenos">23</span></a>
+</span><span id="GofileAPIException-24"><a href="#GofileAPIException-24"><span class="linenos">24</span></a>        <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;error-notPremium&quot;</span><span class="p">:</span>
+</span><span id="GofileAPIException-25"><a href="#GofileAPIException-25"><span class="linenos">25</span></a>            <span class="k">return</span> <span class="n">GofileAPINotPremiumError</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+</span><span id="GofileAPIException-26"><a href="#GofileAPIException-26"><span class="linenos">26</span></a>        
+</span><span id="GofileAPIException-27"><a href="#GofileAPIException-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> 
 </span><span id="GofileAPIException-28"><a href="#GofileAPIException-28"><span class="linenos">28</span></a>
-</span><span id="GofileAPIException-29"><a href="#GofileAPIException-29"><span class="linenos">29</span></a>    <span class="k">def</span> <span class="fm">__str__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="GofileAPIException-30"><a href="#GofileAPIException-30"><span class="linenos">30</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+</span><span id="GofileAPIException-29"><a href="#GofileAPIException-29"><span class="linenos">29</span></a>    <span class="k">def</span> <span class="fm">__repr__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="GofileAPIException-30"><a href="#GofileAPIException-30"><span class="linenos">30</span></a>        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+</span><span id="GofileAPIException-31"><a href="#GofileAPIException-31"><span class="linenos">31</span></a>
+</span><span id="GofileAPIException-32"><a href="#GofileAPIException-32"><span class="linenos">32</span></a>    <span class="k">def</span> <span class="fm">__str__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="GofileAPIException-33"><a href="#GofileAPIException-33"><span class="linenos">33</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -251,10 +272,10 @@
 
     </div>
     <a class="headerlink" href="#GofileAPIAuthenticationError"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIAuthenticationError-33"><a href="#GofileAPIAuthenticationError-33"><span class="linenos">33</span></a><span class="k">class</span> <span class="nc">GofileAPIAuthenticationError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
-</span><span id="GofileAPIAuthenticationError-34"><a href="#GofileAPIAuthenticationError-34"><span class="linenos">34</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws an authentication error - token is not provided or invalid&quot;&quot;&quot;</span>
-</span><span id="GofileAPIAuthenticationError-35"><a href="#GofileAPIAuthenticationError-35"><span class="linenos">35</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">401</span><span class="p">):</span>
-</span><span id="GofileAPIAuthenticationError-36"><a href="#GofileAPIAuthenticationError-36"><span class="linenos">36</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIAuthenticationError-36"><a href="#GofileAPIAuthenticationError-36"><span class="linenos">36</span></a><span class="k">class</span> <span class="nc">GofileAPIAuthenticationError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="GofileAPIAuthenticationError-37"><a href="#GofileAPIAuthenticationError-37"><span class="linenos">37</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws an authentication error - token is not provided or invalid&quot;&quot;&quot;</span>
+</span><span id="GofileAPIAuthenticationError-38"><a href="#GofileAPIAuthenticationError-38"><span class="linenos">38</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">401</span><span class="p">):</span>
+</span><span id="GofileAPIAuthenticationError-39"><a href="#GofileAPIAuthenticationError-39"><span class="linenos">39</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -272,8 +293,8 @@
 
     </div>
     <a class="headerlink" href="#GofileAPIAuthenticationError.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIAuthenticationError.__init__-35"><a href="#GofileAPIAuthenticationError.__init__-35"><span class="linenos">35</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">401</span><span class="p">):</span>
-</span><span id="GofileAPIAuthenticationError.__init__-36"><a href="#GofileAPIAuthenticationError.__init__-36"><span class="linenos">36</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIAuthenticationError.__init__-38"><a href="#GofileAPIAuthenticationError.__init__-38"><span class="linenos">38</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">401</span><span class="p">):</span>
+</span><span id="GofileAPIAuthenticationError.__init__-39"><a href="#GofileAPIAuthenticationError.__init__-39"><span class="linenos">39</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -307,10 +328,10 @@
 
     </div>
     <a class="headerlink" href="#GofileAPIContentNotFoundError"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIContentNotFoundError-38"><a href="#GofileAPIContentNotFoundError-38"><span class="linenos">38</span></a><span class="k">class</span> <span class="nc">GofileAPIContentNotFoundError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
-</span><span id="GofileAPIContentNotFoundError-39"><a href="#GofileAPIContentNotFoundError-39"><span class="linenos">39</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws content not found - content_id is invalid&quot;&quot;&quot;</span>
-</span><span id="GofileAPIContentNotFoundError-40"><a href="#GofileAPIContentNotFoundError-40"><span class="linenos">40</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span><span class="p">):</span>
-</span><span id="GofileAPIContentNotFoundError-41"><a href="#GofileAPIContentNotFoundError-41"><span class="linenos">41</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIContentNotFoundError-41"><a href="#GofileAPIContentNotFoundError-41"><span class="linenos">41</span></a><span class="k">class</span> <span class="nc">GofileAPIContentNotFoundError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="GofileAPIContentNotFoundError-42"><a href="#GofileAPIContentNotFoundError-42"><span class="linenos">42</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws content not found - content_id is invalid&quot;&quot;&quot;</span>
+</span><span id="GofileAPIContentNotFoundError-43"><a href="#GofileAPIContentNotFoundError-43"><span class="linenos">43</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span><span class="p">):</span>
+</span><span id="GofileAPIContentNotFoundError-44"><a href="#GofileAPIContentNotFoundError-44"><span class="linenos">44</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -328,8 +349,8 @@
 
     </div>
     <a class="headerlink" href="#GofileAPIContentNotFoundError.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIContentNotFoundError.__init__-40"><a href="#GofileAPIContentNotFoundError.__init__-40"><span class="linenos">40</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span><span class="p">):</span>
-</span><span id="GofileAPIContentNotFoundError.__init__-41"><a href="#GofileAPIContentNotFoundError.__init__-41"><span class="linenos">41</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPIContentNotFoundError.__init__-43"><a href="#GofileAPIContentNotFoundError.__init__-43"><span class="linenos">43</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">404</span><span class="p">):</span>
+</span><span id="GofileAPIContentNotFoundError.__init__-44"><a href="#GofileAPIContentNotFoundError.__init__-44"><span class="linenos">44</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -363,14 +384,14 @@
 
     </div>
     <a class="headerlink" href="#GofileAPINotOwnerError"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPINotOwnerError-43"><a href="#GofileAPINotOwnerError-43"><span class="linenos">43</span></a><span class="k">class</span> <span class="nc">GofileAPINotOwnerError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
-</span><span id="GofileAPINotOwnerError-44"><a href="#GofileAPINotOwnerError-44"><span class="linenos">44</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws not own of content - content is owned by another user&quot;&quot;&quot;</span>
-</span><span id="GofileAPINotOwnerError-45"><a href="#GofileAPINotOwnerError-45"><span class="linenos">45</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
-</span><span id="GofileAPINotOwnerError-46"><a href="#GofileAPINotOwnerError-46"><span class="linenos">46</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPINotOwnerError-46"><a href="#GofileAPINotOwnerError-46"><span class="linenos">46</span></a><span class="k">class</span> <span class="nc">GofileAPINotOwnerError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="GofileAPINotOwnerError-47"><a href="#GofileAPINotOwnerError-47"><span class="linenos">47</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws not owner of content - content is owned by another user&quot;&quot;&quot;</span>
+</span><span id="GofileAPINotOwnerError-48"><a href="#GofileAPINotOwnerError-48"><span class="linenos">48</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
+</span><span id="GofileAPINotOwnerError-49"><a href="#GofileAPINotOwnerError-49"><span class="linenos">49</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Gofile API throws not own of content - content is owned by another user</p>
+            <div class="docstring"><p>Gofile API throws not owner of content - content is owned by another user</p>
 </div>
 
 
@@ -384,8 +405,8 @@
 
     </div>
     <a class="headerlink" href="#GofileAPINotOwnerError.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPINotOwnerError.__init__-45"><a href="#GofileAPINotOwnerError.__init__-45"><span class="linenos">45</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
-</span><span id="GofileAPINotOwnerError.__init__-46"><a href="#GofileAPINotOwnerError.__init__-46"><span class="linenos">46</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPINotOwnerError.__init__-48"><a href="#GofileAPINotOwnerError.__init__-48"><span class="linenos">48</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
+</span><span id="GofileAPINotOwnerError.__init__-49"><a href="#GofileAPINotOwnerError.__init__-49"><span class="linenos">49</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -403,6 +424,62 @@
             <div><dt>builtins.BaseException</dt>
                                 <dd id="GofileAPINotOwnerError.with_traceback" class="function">with_traceback</dd>
                 <dd id="GofileAPINotOwnerError.args" class="variable">args</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+                <section id="GofileAPINotPremiumAccountError">
+                            <input id="GofileAPINotPremiumAccountError-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">GofileAPINotPremiumAccountError</span><wbr>(<span class="base"><a href="#GofileAPIException">GofileAPIException</a></span>):
+
+                <label class="view-source-button" for="GofileAPINotPremiumAccountError-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#GofileAPINotPremiumAccountError"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPINotPremiumAccountError-51"><a href="#GofileAPINotPremiumAccountError-51"><span class="linenos">51</span></a><span class="k">class</span> <span class="nc">GofileAPINotPremiumAccountError</span> <span class="p">(</span><span class="n">GofileAPIException</span><span class="p">):</span>
+</span><span id="GofileAPINotPremiumAccountError-52"><a href="#GofileAPINotPremiumAccountError-52"><span class="linenos">52</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Gofile API throws not premium account error - upgrade at gofile.io/premium&quot;&quot;&quot;</span>
+</span><span id="GofileAPINotPremiumAccountError-53"><a href="#GofileAPINotPremiumAccountError-53"><span class="linenos">53</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
+</span><span id="GofileAPINotPremiumAccountError-54"><a href="#GofileAPINotPremiumAccountError-54"><span class="linenos">54</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Gofile API throws not premium account error - upgrade at gofile.io/premium</p>
+</div>
+
+
+                            <div id="GofileAPINotPremiumAccountError.__init__" class="classattr">
+                                        <input id="GofileAPINotPremiumAccountError.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="name">GofileAPINotPremiumAccountError</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span></span>)</span>
+
+                <label class="view-source-button" for="GofileAPINotPremiumAccountError.__init__-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#GofileAPINotPremiumAccountError.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="GofileAPINotPremiumAccountError.__init__-53"><a href="#GofileAPINotPremiumAccountError.__init__-53"><span class="linenos">53</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">403</span><span class="p">):</span>
+</span><span id="GofileAPINotPremiumAccountError.__init__-54"><a href="#GofileAPINotPremiumAccountError.__init__-54"><span class="linenos">54</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="#GofileAPIException">GofileAPIException</a></dt>
+                                <dd id="GofileAPINotPremiumAccountError.msg" class="variable"><a href="#GofileAPIException.msg">msg</a></dd>
+                <dd id="GofileAPINotPremiumAccountError.code" class="variable"><a href="#GofileAPIException.code">code</a></dd>
+
+            </div>
+            <div><dt>builtins.BaseException</dt>
+                                <dd id="GofileAPINotPremiumAccountError.with_traceback" class="function">with_traceback</dd>
+                <dd id="GofileAPINotPremiumAccountError.args" class="variable">args</dd>
 
             </div>
                                 </dl>
