@@ -1,8 +1,9 @@
 
 # Gofilepy - Unofficial Python wrapper for Gofile API
 
-![PyPI Package](https://badge.fury.io/py/gofilepy-api.svg)
-[![Downloads](https://static.pepy.tech/badge/gofilepy-api)](https://pepy.tech/project/gofilepy-api)
+[![PyPI Package](https://badge.fury.io/py/gofilepy-api.svg)](https://pypi.org/project/gofilepy-api/)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/gofilepy-api)
+[![gofilepy - Docs](https://img.shields.io/badge/docs-yes-bright_green)](https://m0bb1n.github.io/gofilepy/gofilepy.html)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/gofilepy-api)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gofilepy-api)
 ![PyPI - License](https://img.shields.io/pypi/l/gofilepy-api)
