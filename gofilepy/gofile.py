@@ -66,7 +66,7 @@ class GofileClient (object):
         fn = direct_link.rsplit('/', 1)[1]
         resp = requests.get(direct_link, stream=True, allow_redirects=None)
         if resp.status_code != 200:
-            raise GofileApiException("Could not download file", code=resp.status_code)
+            raise GofileAPIException("Could not download file", code=resp.status_code)
 
         out_path = os.path.join(out_dir, fn)
         with open(out_path, 'wb') as f:
@@ -314,7 +314,8 @@ class GofileContent (object):
 
     def delete (self) -> None:
         """Deletes itself.  When called successfully is_deleted = True"""
-        self._client.delete(self.content_id)
+        guest_token = self._raw.get("guestToken")
+        self._client.delete(self.content_id, token=guest_token)
         self.is_deleted = True
 
     def copy_to (self, dest_id: str) -> None:
@@ -415,7 +416,9 @@ class GofileFile (GofileContent):
         self.mimetype = data.get("mimetype", self.mimetype)
         self.md5 = data.get("md5", self.md5)
         self.server = data.get("serverChoosen", None)
-        self.direct_link = self._get_direct_link_from_link(data.get("link", None))
+        link = data.get("link")
+        if link:
+            self.direct_link = self._get_direct_link_from_link(link)
         self.page_link = data.get("downloadPage", self.page_link) 
 
         self._raw = data
