@@ -21,7 +21,7 @@ class GofileAPIException (Exception):
             return GofileAPIContentNotFoundError(status)
 
         elif status == "error-notPremium":
-            return GofileAPINotPremiumError(status)
+            return GofileAPINotPremiumAccountError(status)
         
         return cls(status, code) 
 
