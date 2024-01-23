@@ -172,6 +172,11 @@ class GofileClient (object):
             else:
                 value = "false"
 
+        elif type(value) == list: #api expects list as comma s
+            value = ",".join(value)
+
+
+
         data = {
             "contentId": content_id,
             "token": token,
@@ -462,6 +467,10 @@ class GofileFolder (GofileContent):
     """If folder is root folder"""
     has_password: bool
     """If folder is password protected"""
+    description: str
+    """A user set description using set_option"""
+    tags: list
+    """User set tags using set_option"""
     code: str
     """Folder shortcode to access from the browser"""
 
@@ -473,9 +482,11 @@ class GofileFolder (GofileContent):
         self.total_size = None
         self.total_download_cnt = None
         self.time_created = None
+        self.tags = []
         self.is_public = None
         self.is_owner = None
         self.is_root = None
+        self.description = None
         self.has_password = None
         self.code = None
 
@@ -506,12 +517,18 @@ class GofileFolder (GofileContent):
         self.is_owner = data.get("isOwner", self.is_owner)
         self.is_root = data.get("isRoot", False)
         self.has_password = data.get("password", self.has_password)
+        self.description = data.get("description", self.description)
         self.code = data.get("code", self.code)
         self.total_size = data.get("totalSize", self.total_size)
         self.total_download_cnt = data.get("totalDownloadCount", self.total_download_cnt)
         self.children_ids = data.get("childs")
-
         self.children = self.__init_children_from_contents__(data)
+
+        self.tags = data.get("tags", "").split(",")
+        if self.tags[0] == "":
+            self.tags = []
+
+
 
         self._raw = data
 
