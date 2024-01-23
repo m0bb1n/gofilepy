@@ -28,6 +28,11 @@ def test_account_get():
     assert type(account.email) == str
     assert type(account.token) == str
 
+def test_content_delete(c):
+    assert c.is_deleted == False
+    c.delete()
+    assert c.is_deleted == True
+
 def test_content_copy(c):
     #copyContent api doesn't return any data so assertion reload parent folder to see an increase in children
     folder = client.get(c.parent_id)
@@ -48,10 +53,11 @@ def test_file_set_options(f):
 
 def test_folder_set_options(folder):
     desc = "A short description"
+    tags = ["test","gofilepy"]
     folder.set_option("public", False)
     folder.set_option("password", "secret")
     folder.set_option("description", desc)
-    folder.set_option("tags", ["test","gofilepy"])
+    folder.set_option("tags", tags)
     folder.set_option("expire", int(time()+120)) #Expires in 2 mins
     sleep(5)
 
@@ -60,6 +66,7 @@ def test_folder_set_options(folder):
     assert folder.has_password == True
     assert folder.is_public == False
     assert folder.description == desc 
+    assert folder.tags == tags
 
 def test_file_download(f):
     path =  f.download()
