@@ -2,6 +2,7 @@ import requests
 import os
 from io import BufferedReader
 from .exceptions import GofileAPIException
+from .options import FileOption, FolderOption, ContentOption
 
 
 GofileFile = None
@@ -10,23 +11,23 @@ GofileAccount = None
 
 class GofileClient (object):
     server = None
-    BASE_DOMAIN = 'gofile.io'
-    API_SUBDOMAIN = 'api'
-    BASE_API_URL = 'https://'+API_SUBDOMAIN+'.'+BASE_DOMAIN
+    _BASE_DOMAIN = 'gofile.io'
+    _API_SUBDOMAIN = 'api'
+    _BASE_API_URL = 'https://'+_API_SUBDOMAIN+'.'+_BASE_DOMAIN
 
-    API_ROUTE_GET_SERVER_URL = BASE_API_URL + '/getServer'
-    API_ROUTE_GET_ACCOUNT_URL = BASE_API_URL + "/getAccountDetails"
-    API_ROUTE_GET_CONTENT_URL = BASE_API_URL + "/getContent"
+    _API_ROUTE_GET_SERVER_URL = _BASE_API_URL + '/getServer'
+    _API_ROUTE_GET_ACCOUNT_URL = _BASE_API_URL + "/getAccountDetails"
+    _API_ROUTE_GET_CONTENT_URL = _BASE_API_URL + "/getContent"
 
-    API_ROUTE_DELETE_CONTENT_URL = BASE_API_URL + "/deleteContent"
-    API_ROUTE_COPY_CONTENT_URL = BASE_API_URL + "/copyContent"
-    API_ROUTE_CREATE_FOLDER_URL = BASE_API_URL + "/createFolder"
-    API_ROUTE_SET_OPTION_URL = BASE_API_URL +  "/setOption"
+    _API_ROUTE_DELETE_CONTENT_URL = _BASE_API_URL + "/deleteContent"
+    _API_ROUTE_COPY_CONTENT_URL = _BASE_API_URL + "/copyContent"
+    _API_ROUTE_CREATE_FOLDER_URL = _BASE_API_URL + "/createFolder"
+    _API_ROUTE_SET_OPTION_URL = _BASE_API_URL +  "/setOption"
 
-    API_ROUTE_DOWNLOAD_PATH = "download"
-    API_ROUTE_UPLOAD_CONTENT_PATH = "uploadFile"
+    _API_ROUTE_DOWNLOAD_PATH = "download"
+    _API_ROUTE_UPLOAD_CONTENT_PATH = "uploadFile"
 
-    API_STORE_FORMAT = "https://{}.{}/{}"
+    _API_STORE_FORMAT = "https://{}.{}/{}"
 
     def __init__(self, token: str = None, get_account: bool = True, verbose: bool = False):
         self.token = token
@@ -53,12 +54,12 @@ class GofileClient (object):
         return got
 
     def get_best_upload_url(self):
-        return self.API_STORE_FORMAT.format(self.server, self.BASE_DOMAIN, self.API_ROUTE_UPLOAD_CONTENT_PATH)
+        return self._API_STORE_FORMAT.format(self.server, self._BASE_DOMAIN, self._API_ROUTE_UPLOAD_CONTENT_PATH)
 
 
     @staticmethod
     def get_best_server(throw_if_not_200=False):
-        resp = requests.get(GofileClient.API_ROUTE_GET_SERVER_URL)
+        resp = requests.get(GofileClient._API_ROUTE_GET_SERVER_URL)
         return GofileClient.handle_response(resp)['server']
 
 
@@ -114,7 +115,7 @@ class GofileClient (object):
 
     def _get_content_raw_resp(self, content_id: str, token: str = None):
         token = self._get_token(token)
-        req_url = self.API_ROUTE_GET_CONTENT_URL + "?contentId="+content_id
+        req_url = self._API_ROUTE_GET_CONTENT_URL + "?contentId="+content_id
 
         if token:
             req_url += "&token="+token
@@ -136,13 +137,13 @@ class GofileClient (object):
         """Calls Gofile API to delete provided content_ids."""
         token = self._get_token(token)
         data = {"contentsId": ",".join(content_ids), "token": token}
-        resp = requests.delete(GofileClient.API_ROUTE_DELETE_CONTENT_URL, data=data)
+        resp = requests.delete(GofileClient._API_ROUTE_DELETE_CONTENT_URL, data=data)
         got = GofileClient.handle_response(resp)
 
 
     def _get_account_raw_resp(self, token: str = None):
         token = self._get_token(token)
-        url = GofileClient.API_ROUTE_GET_ACCOUNT_URL + "?token=" + token
+        url = GofileClient._API_ROUTE_GET_ACCOUNT_URL + "?token=" + token
         resp = requests.get(url)
         data = GofileClient.handle_response(resp)
         return resp, data
@@ -166,16 +167,7 @@ class GofileClient (object):
         """Sets content option like 'description', 'public', etc (more at gofile.io/api).  Note that folder and file content have different options"""
         token = self._get_token(token)
 
-        if type(value) == bool: #api expects bools to be string
-            if value:
-                value = "true"
-            else:
-                value = "false"
-
-        elif type(value) == list: #api expects list as comma s
-            value = ",".join(value)
-
-
+        value = ContentOption._process_option_value(option, value) #checks file types and formats for api
 
         data = {
             "contentId": content_id,
@@ -184,7 +176,7 @@ class GofileClient (object):
             "value": value
         }
 
-        resp = requests.put(GofileClient.API_ROUTE_SET_OPTION_URL, data=data)
+        resp = requests.put(GofileClient._API_ROUTE_SET_OPTION_URL, data=data)
         got = GofileClient.handle_response(resp)
 
 
@@ -200,7 +192,7 @@ class GofileClient (object):
             "token": token
         }
 
-        resp = requests.put(GofileClient.API_ROUTE_COPY_CONTENT_URL, data=data)
+        resp = requests.put(GofileClient._API_ROUTE_COPY_CONTENT_URL, data=data)
         got = GofileClient.handle_response(resp)
         
         """
@@ -221,7 +213,7 @@ class GofileClient (object):
 
         data["token"] = token
 
-        resp = requests.put(GofileClient.API_ROUTE_CREATE_FOLDER_URL, data=data)
+        resp = requests.put(GofileClient._API_ROUTE_CREATE_FOLDER_URL, data=data)
         got = GofileClient.handle_response(resp)
 
         return GofileContent.__init_from_resp__(resp, client=self) 
