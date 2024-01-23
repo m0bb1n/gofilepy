@@ -25,6 +25,7 @@ Install Gofilepy with pip
 
 ```python
 from gofilepy import GofileClient
+from gofilepy.options import FileOption, FolderOption
 
 client = GofileClient()
 
@@ -52,7 +53,8 @@ root = client.get(root_folder_id)
 
 
 child = client.create_folder("NEW_FOLDER", parent_id=root.content_id)
-child.set_option("description", "New folder created with gofilepy") #More options available https://gofile.io/api
+child.set_option(FolderOption.DESCRIPTION, "New folder created with gofilepy") #More options available https://gofile.io/api
+child.set_option(FolderOption.TAGS, ["example", "gofilepy"])
 
 # Registering changes to local variable
 child.content_id in root.children_ids # = false because it hasn't been updated
@@ -66,7 +68,7 @@ root.reload() #Now root.children_ids has another id
 #uploading & downloading files
 f = child.upload("./test.txt") #uploads file to newly created "child" folder
 
-f.set_option("directLink", True) #Must be set to true to download using gofilepy
+f.set_option(FileOption.HAS_DIRECT_LINK, True) #Must be set to true to download using gofilepy
 print(f.direct_link) #"None"
 f.reload() #now f.direct_link is updated
 

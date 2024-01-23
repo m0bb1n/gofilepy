@@ -2,6 +2,7 @@ import pytest
 import os
 from time import sleep, time
 from gofilepy import GofileClient
+from gofilepy.options import FolderOption, FileOption
 
 #integration testing for premium features
 
@@ -45,7 +46,7 @@ def test_content_copy(c):
     assert len(folder.children) == num_of_children + 1
 
 def test_file_set_options(f):
-    f.set_option("directLink", True)
+    f.set_option(FileOption.HAS_DIRECT_LINK, True)
     sleep(5)
     f.reload()
 
@@ -54,11 +55,11 @@ def test_file_set_options(f):
 def test_folder_set_options(folder):
     desc = "A short description"
     tags = ["test","gofilepy"]
-    folder.set_option("public", False)
-    folder.set_option("password", "secret")
-    folder.set_option("description", desc)
-    folder.set_option("tags", tags)
-    folder.set_option("expire", int(time()+120)) #Expires in 2 mins
+    folder.set_option(FolderOption.IS_PUBLIC, False)
+    folder.set_option(FolderOption.PASSWORD, "secret")
+    folder.set_option(FolderOption.DESCRIPTION, desc)
+    folder.set_option(FolderOption.TAGS, tags)
+    folder.set_option(FolderOption.EXPIRE, time()+120) #Expires in 2 mins
     sleep(5)
 
     folder.reload()
