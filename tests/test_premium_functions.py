@@ -82,14 +82,40 @@ def test_file_download(f):
     assert data_local == data_download
     os.remove(path) #remove downloaded test file
 
-def test_folder_create():
+def test_folder_create(parent_id=None):
+    if not parent_id:
+        parent_id = client.account.root_id
     name = "test_folder"
-    folder = client.create_folder(name, client.account.root_id)
+    folder = client.create_folder(name, parent_id)
 
     assert folder.name == name
-    assert folder.parent_id == client.account.root_id
+    assert folder.parent_id == parent_id 
     return folder
 
+
+def test_recursive_folder_reload():
+    f1 = test_folder_create()
+    f2 = test_folder_create(parent_id=f1.content_id)
+    f3 = test_folder_create(parent_id=f2.content_id)
+    fi = test_file_upload(f3.content_id)
+
+    sleep(5)
+    a = client.get_folder(f1.content_id)
+
+    assert a.content_id == a.children[0].parent_id
+    assert a.children[0].is_folder_type
+
+    assert a.children[0].children[0].is_unknown_type
+    a.children[0].children[0].reload()
+
+    assert a.children[0].children[0].is_folder_type
+
+    if a.children[0].children[0].children[0].is_unknown_type:
+        a.children[0].children[0].children[0].reload()
+
+    assert a.children[0].children[0].children[0].is_file_type
+
+    test_content_delete(f1)
 
 if __name__ == "__main__":
     test_account_get()
@@ -104,4 +130,6 @@ if __name__ == "__main__":
 
     test_content_delete(f)
     test_content_delete(folder)
+
+    test_recursive_folder_reload()
 

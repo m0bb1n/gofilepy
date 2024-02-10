@@ -5,7 +5,7 @@ with open("README.md", "r", encoding = "utf-8") as fh:
 
 setuptools.setup(
     name = "gofilepy-api",
-    version = "0.2.6",
+    version = "0.2.7",
     author = "m0bb1n",
     author_email = "99den0@gmail.com",
     description = "A python wrapper for Gofile REST API",
@@ -19,7 +19,6 @@ setuptools.setup(
     ],
     classifiers = [
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
     ]
 )
