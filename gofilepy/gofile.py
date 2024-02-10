@@ -323,13 +323,13 @@ class GofileContent (object):
         self.copy_to(dest_id)
 
     def set_option(self, option: str, value, reload: bool = True) -> None:
-        """Sets options for itself.  Full option list available at gofile.io/api"""
+        """Sets content option.  Full option list available at m0bb1n.github.io/gofilepy/gofilepy/options.html"""
         self._client.set_content_option(self.content_id, option, value)
         if reload:
             self.reload() #reload to get up to date information
 
     def reload (self):
-        """Reloads any new updates to content.  If is_unknown_type = True then reload() returns updated content"""
+        """Reloads any new updates to content.  If is_unknown_type must call reload() before fully usable"""
         if self.is_folder_type or (self.is_unknown_type and self.parent_id == None):
             resp, data = self._client._get_content_raw_resp(self.content_id)
 
@@ -343,14 +343,31 @@ class GofileContent (object):
         elif (self.is_unknown_type or self.is_file_type) and self.parent_id:
             resp, data = self._client._get_content_raw_resp(self.parent_id)
             content_data = data["contents"].get(self.content_id, None)
-            content = None
+
             if content_data:
-                content = GofileContent.__init_from_resp__({"data": content_data}, client=self._client)
+                if self.is_unknown_type:
+                    #re-init instance as sub class (GofileFile or GofileFolder) of GofileContent
+                    match content_data['type']:
+                        case "folder":
+                            self.__class__ = GofileFolder
+                            self.__init__(
+                                content_data["name"], content_data["id"],
+                                content_data["parentFolder"], client=self._client
+                            )
+                        
+                        case "file":
+                            self.__class__ = GofileFile
+                            self.__init__(
+                                content_data["id"], content_data["parentFolder"],
+                                client=self._client
+                            )
 
-                if self.is_file_type:
-                    self._override_from_dict(content_data)
+                        case _:
+                            raise TypeError("Type '{}' is not a valid option".format(content_data['type']))
 
-            return content
+                self._override_from_dict(content_data)
+
+            return self 
 
         else:
             raise NotImplemented
