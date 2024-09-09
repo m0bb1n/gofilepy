@@ -15,27 +15,38 @@ class GofileClient (object):
     _API_SUBDOMAIN = 'api'
     _BASE_API_URL = 'https://'+_API_SUBDOMAIN+'.'+_BASE_DOMAIN
 
-    _API_ROUTE_GET_SERVER_URL = _BASE_API_URL + '/getServer'
-    _API_ROUTE_GET_ACCOUNT_URL = _BASE_API_URL + "/getAccountDetails"
-    _API_ROUTE_GET_CONTENT_URL = _BASE_API_URL + "/getContent"
+    _API_ROUTE_GET_SERVER_URL = _BASE_API_URL + '/servers'
 
-    _API_ROUTE_DELETE_CONTENT_URL = _BASE_API_URL + "/deleteContent"
-    _API_ROUTE_COPY_CONTENT_URL = _BASE_API_URL + "/copyContent"
-    _API_ROUTE_CREATE_FOLDER_URL = _BASE_API_URL + "/createFolder"
-    _API_ROUTE_SET_OPTION_URL = _BASE_API_URL +  "/setOption"
+    _API_ROUTE_GET_ACCOUNT_URL = _BASE_API_URL + "/accounts/{}"
+    _API_ROUTE_GET_ACCOUNT_ID_URL = _BASE_API_URL + "/accounts/getid"
+
+    _API_ROUTE_GET_CONTENT_URL = _BASE_API_URL + "/contents/{}"
+    _API_ROUTE_DELETE_CONTENT_URL = _BASE_API_URL + "/contents"
+    _API_ROUTE_COPY_CONTENT_URL = _BASE_API_URL + "/contents/copy"
+
+    _API_ROUTE_CREATE_FOLDER_URL = _BASE_API_URL + "/contents/createFolder"
+    _API_ROUTE_SET_OPTION_URL = _BASE_API_URL +  "/contents/{}/update"
 
     _API_ROUTE_DOWNLOAD_PATH = "download"
     _API_ROUTE_UPLOAD_CONTENT_PATH = "uploadFile"
 
     _API_STORE_FORMAT = "https://{}.{}/{}"
 
-    def __init__(self, token: str = None, get_account: bool = True, verbose: bool = False):
+    def __init__(self, zone: str = "na", token: str = None, get_account: bool = True, verbose: bool = False):
         self.token = token
-        self.server = GofileClient.get_best_server()
+        if token:
+            self.headers = GofileClient.create_authorization_header(token)
+
+        self._servers = GofileClient.get_best_server()
+        self.server = GofileClient.get_preferred_server(zone, self._servers) 
         self.verbose = verbose
 
         if get_account and token:
             self.get_account()
+
+    @staticmethod
+    def create_authorization_header(token):
+        return {"Authorization": f"Bearer {token}"}
 
     @staticmethod
     def handle_response(resp: requests.Response):
@@ -57,10 +68,21 @@ class GofileClient (object):
         return self._API_STORE_FORMAT.format(self.server, self._BASE_DOMAIN, self._API_ROUTE_UPLOAD_CONTENT_PATH)
 
 
+
     @staticmethod
     def get_best_server(throw_if_not_200=False):
         resp = requests.get(GofileClient._API_ROUTE_GET_SERVER_URL)
-        return GofileClient.handle_response(resp)['server']
+        return GofileClient.handle_response(resp)['servers']
+    
+    @staticmethod
+    def get_preferred_server(zone: str, servers: list, strict: bool = False):
+        for sv in servers:
+            if sv["zone"] == zone:
+                return sv["name"]
+
+        if not strict:
+            return servers[0]["name"]
+
 
 
     def _download_file_from_direct_link(self, direct_link, out_dir="./"):
@@ -90,12 +112,13 @@ class GofileClient (object):
 
         upload_url = self.get_best_upload_url()
         token = self._get_token(token)
+        headers = {}
+        if token:
+            headers = self.create_authorization_header(token)
 
         data = {}
         if parent_id:
             data["folderId"] = parent_id
-        if token:
-            data["token"] = token
 
         files = {}
         if file:
@@ -103,24 +126,21 @@ class GofileClient (object):
         elif path:
             files["file"] = open(path, "rb")
 
-        resp = requests.post(upload_url, files=files, data=data)
+        resp = requests.post(upload_url, files=files, data=data, headers=headers)
         got = GofileClient.handle_response(resp)
 
         #Needed because json returned from API has different key values at this endpoint
-        got["id"] = got.get("fileId", None)
-        got["name"] = got.get("fileName", None)
+        got["id"] = got.get("id", None)
+        got["name"] = got.get("name", None)
 
         return  GofileFile._load_from_dict(got, client=self)
     
 
     def _get_content_raw_resp(self, content_id: str, token: str = None):
         token = self._get_token(token)
-        req_url = self._API_ROUTE_GET_CONTENT_URL + "?contentId="+content_id
+        headers = GofileClient.create_authorization_header(token)
 
-        if token:
-            req_url += "&token="+token
-
-        resp = requests.get(req_url)
+        resp = requests.get(self._API_ROUTE_GET_CONTENT_URL.format(content_id), headers=headers)
         data = GofileClient.handle_response(resp)
         return resp, data
 
@@ -136,25 +156,29 @@ class GofileClient (object):
     def delete(self, *content_ids: str, token: str = None):
         """Calls Gofile API to delete provided content_ids."""
         token = self._get_token(token)
+        headers = GofileClient.create_authorization_header(token)
         data = {"contentsId": ",".join(content_ids), "token": token}
-        resp = requests.delete(GofileClient._API_ROUTE_DELETE_CONTENT_URL, data=data)
+        resp = requests.delete(GofileClient._API_ROUTE_DELETE_CONTENT_URL, data=data, headers=headers)
         got = GofileClient.handle_response(resp)
-
 
     def _get_account_raw_resp(self, token: str = None):
         token = self._get_token(token)
-        url = GofileClient._API_ROUTE_GET_ACCOUNT_URL + "?token=" + token
-        resp = requests.get(url)
+        headers = GofileClient.create_authorization_header(token) 
+        resp = requests.get(GofileClient._API_ROUTE_GET_ACCOUNT_ID_URL, headers=headers)
         data = GofileClient.handle_response(resp)
         return resp, data
 
+
+    def get_account_id(self):
+        """GET ACCOUNT STUFF HERE.  TO GET ACCOUNT INFO U HAVE TO GET ACCOUNT_ID FIRST"""
+        pass
 
     def get_account(self, token: str = None) -> GofileAccount:
         """If token is provided returns specified account, otherwise token defaults to self.token.
           \If token is default self.account is updated"""
         token = self._get_token(token)
         resp, data = self._get_account_raw_resp(token=token)
-        account = GofileAccount._load_from_dict(data)
+        account = GofileAccount._load_from_account_id(data["id"], token)
         account._client = self
         account._raw = data
 
@@ -166,17 +190,17 @@ class GofileClient (object):
     def set_content_option(self, content_id: str, option: str, value, token: str = None):
         """Sets content option like 'description', 'public', etc (more at gofile.io/api).  Note that folder and file content have different options"""
         token = self._get_token(token)
+        headers = self.create_authorization_header(token)
 
         value = ContentOption._process_option_value(option, value) #checks file types and formats for api
 
         data = {
-            "contentId": content_id,
             "token": token,
             "option": option,
             "value": value
         }
 
-        resp = requests.put(GofileClient._API_ROUTE_SET_OPTION_URL, data=data)
+        resp = requests.put(GofileClient._API_ROUTE_SET_OPTION_URL.format(content_id), data=data, headers=headers)
         got = GofileClient.handle_response(resp)
 
 
@@ -186,13 +210,14 @@ class GofileClient (object):
             raise ValueError("Must pass a parent folder id: parent_id=None")
 
         token = self._get_token(token)
+        headers = self.create_authorization_header(token)
         data = {
             "contentsId": ",".join(content_ids),
             "folderIdDest": parent_id,
             "token": token
         }
 
-        resp = requests.put(GofileClient._API_ROUTE_COPY_CONTENT_URL, data=data)
+        resp = requests.post(GofileClient._API_ROUTE_COPY_CONTENT_URL, data=data, headers=headers)
         got = GofileClient.handle_response(resp)
         
         """
@@ -205,15 +230,14 @@ class GofileClient (object):
     def create_folder(self, name: str, parent_id: str, token: str = None):
         """Creates folder in specified parent folder's content_id"""
         token = self._get_token(token)
+        headers = self.create_authorization_header(token)
 
         data = {
             "parentFolderId": parent_id,
             "folderName": name
         }
 
-        data["token"] = token
-
-        resp = requests.put(GofileClient._API_ROUTE_CREATE_FOLDER_URL, data=data)
+        resp = requests.post(GofileClient._API_ROUTE_CREATE_FOLDER_URL, data=data, headers=headers)
         got = GofileClient.handle_response(resp)
 
         return GofileContent.__init_from_resp__(resp, client=self) 
@@ -252,12 +276,23 @@ class GofileAccount (object):
         self.email = data.get("email", self.email)
         self.tier = data.get("tier", self.tier)
         self.root_id = data.get("rootFolder", self.root_id)
-        self.folder_cnt = data.get("foldersCount", self.folder_cnt)
-        self.file_cnt = data.get("filesCount", self.file_cnt)
-        self.total_size = data.get("totalSize", self.total_size)
-        self.total_download_cnt = data.get("totalDownloadCount", self.total_download_cnt)
+        self.folder_cnt = data.get("statsCurrent", {}).get("foldersCount", self.folder_cnt)
+        self.file_cnt = data.get("statsCurrent", {}).get("filesCount", self.file_cnt)
+        self.total_size = data.get('statsCurrent', {}).get("storage", self.total_size)
+        self.total_download_cnt = data.get('statsCurrent', {}).get("trafficWebDownloaded", self.total_download_cnt)
 
         self._raw = data
+
+    @staticmethod
+    def _load_from_account_id(account_id: str, token: str):
+        headers = GofileClient.create_authorization_header(token) 
+        resp = requests.get(
+            GofileClient._API_ROUTE_GET_ACCOUNT_URL.format(account_id),
+            headers=headers
+        )
+        data = GofileClient.handle_response(resp)
+        return GofileAccount._load_from_dict(data)
+
 
     @staticmethod
     def _load_from_dict(data: dict):
