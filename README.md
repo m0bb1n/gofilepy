@@ -25,7 +25,6 @@ Install Gofilepy with pip
 
 ```python
 from gofilepy import GofileClient
-from gofilepy.options import FileOption, FolderOption
 
 client = GofileClient()
 
@@ -41,6 +40,7 @@ print(file.page_link) #View and download file at this link
 
 ```python
 from gofilepy import GofileClient
+from gofilepy.options import FileOption, FolderOption
 from gofilepy.exceptions import GofileAPIAuthenticationError
 
 client = GofileClient(token="") #Get token from gofile.io.
@@ -69,8 +69,8 @@ root.reload() #Now root.children_ids has another id
 f = child.upload("./test.txt") #uploads file to newly created "child" folder
 
 f.set_option(FileOption.HAS_DIRECT_LINK, True) #Must be set to true to download using gofilepy
-print(f.direct_link) #"None"
-f.reload() #now f.direct_link is updated
+direct_link = f.create_direct_link()
+print(direct_link) #or f.direct_links[0]
 
 path = f.download("./") #downloads file to local dir
 print(path) #function returns full path of downloaded file

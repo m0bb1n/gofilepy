@@ -29,26 +29,20 @@ class ContentOption (object):
 
 
 class FileOption (ContentOption):
-    HAS_DIRECT_LINK = "directLink"
-    """Expected value is a bool"""
-
     _process_value_map = {
         lambda value: value.__str__().lower()
     }
 
     _option_value_types = {
-        HAS_DIRECT_LINK: [bool]
     }
 
     _option_value_format = {
-        HAS_DIRECT_LINK: lambda value: value.__str__().lower(), #requires a lowercase bool string
     }
 
 
     @classmethod
     def _get_options(cls):
         return [
-            cls.HAS_DIRECT_LINK
         ]
 
 class FolderOption (ContentOption):
@@ -60,7 +54,7 @@ class FolderOption (ContentOption):
     """Expected value is a str"""
     TAGS = "tags"
     """Expected value is list[str]"""
-    EXPIRE = "expire"
+    EXPIRE = "expiry"
     """Expected value is unix timestamp float or int"""
 
     #map that holds any extra processing to option value

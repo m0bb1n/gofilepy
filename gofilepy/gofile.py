@@ -27,6 +27,8 @@ class GofileClient (object):
     _API_ROUTE_CREATE_FOLDER_URL = _BASE_API_URL + "/contents/createFolder"
     _API_ROUTE_SET_OPTION_URL = _BASE_API_URL +  "/contents/{}/update"
 
+    _API_ROUTE_CREATE_FILE_DIRECT_LINK_URL = _BASE_API_URL + "/contents/{}/directlinks"
+
     _API_ROUTE_DOWNLOAD_PATH = "download"
     _API_ROUTE_UPLOAD_CONTENT_PATH = "uploadFile"
 
@@ -84,6 +86,30 @@ class GofileClient (object):
             return servers[0]["name"]
 
 
+
+    def create_file_direct_link(self, content_id, token=None, expire=None, ips_allowed=[], domains_allowed=[], username=None, password=None, file=None):
+        token = self._get_token(token)
+        headers = self.create_authorization_header(token)
+
+        data = {}
+        if expire:
+            data["expireTime"] = expire
+        if ips_allowed:
+            data["sourceIpsAllowed"] = ips_allowed
+        if domains_allowed:
+            data["domainsAllowed"] = domains_allowed
+        if username or password:
+            if not (username and password):
+                raise ValueError("username AND password both needed create direct link creation")
+            data["auth"] = [username, password]
+
+        resp = requests.post(
+                GofileClient._API_ROUTE_CREATE_FILE_DIRECT_LINK_URL.format(content_id),
+                data=data,
+                headers=headers
+                )
+
+        return GofileFileDirectLink._load_from_dict(GofileClient.handle_response(resp), file=file)
 
     def _download_file_from_direct_link(self, direct_link, out_dir="./"):
         fn = direct_link.rsplit('/', 1)[1]
@@ -195,9 +221,8 @@ class GofileClient (object):
         value = ContentOption._process_option_value(option, value) #checks file types and formats for api
 
         data = {
-            "token": token,
-            "option": option,
-            "value": value
+            "attribute": option,
+            "attributeValue": value
         }
 
         resp = requests.put(GofileClient._API_ROUTE_SET_OPTION_URL.format(content_id), data=data, headers=headers)
@@ -213,7 +238,7 @@ class GofileClient (object):
         headers = self.create_authorization_header(token)
         data = {
             "contentsId": ",".join(content_ids),
-            "folderIdDest": parent_id,
+            "folderId": parent_id,
             "token": token
         }
 
@@ -425,6 +450,50 @@ class GofileContent (object):
 
         return content
 
+
+class GofileFileDirectLink (object):
+    direct_link_id: str
+    """Direct link id - used to modify direct link"""
+    expire: int
+    """Expire time of direct link"""
+    ips_allowed: list[str]
+    """List of source IPs allowed to access the direct link"""
+    domains_allowed: list[str]
+    """List of domains allowed to access the direct link"""
+    username: str
+    """Username to access authenticated direct link"""
+    password: str
+    """Password to access authenticated direct link"""
+
+    def __init__(self, _id, direct_link, expire, ips_allowed=[], domains_allowed=[], username=None, password=None, file=None):
+        self.direct_link_id = _id
+        self.link = direct_link
+        self.expire = expire
+        self.ips_allowed = ips_allowed
+        self.domains_allowed = domains_allowed
+        self.username = username
+        self.password = password
+        self.file = file
+
+    @classmethod
+    def _load_from_dict (cls, data: dict, file=None):
+        #change to load/override from dict
+        link = cls(
+            data["id"],
+            data["directLink"],
+            data["expireTime"],
+            domains_allowed=data["domainsAllowed"],
+            ips_allowed=data["sourceIpsAllowed"],
+            file=file
+        )
+        if len(data["auth"]):
+            link.username = data["auth"][0]
+            link.password = data["auth"][1]
+
+        link._raw = data 
+
+        return link
+
 class GofileFile (GofileContent):
     time_created: int
     """Time that file was uploaded"""
@@ -436,12 +505,13 @@ class GofileFile (GofileContent):
     """Mimetype of file"""
     server: str
     """subdomain server from where file will be downloaded (Premium)"""
-    direct_link: str
-    """Direct link to download file (Premium)"""
     page_link: str
     """Page link to view and get download url for file"""
     md5: str
     """Hash function of file for verification"""
+
+    direct_links: list[GofileFileDirectLink]
+    """List of GofileFileDirectLinks - look at class for more info (Premium)"""
 
     def __init__(self, content_id: str, parent_id: str, client: GofileClient = None):
         super().__init__(content_id, parent_id, _type="file", client=client)
@@ -451,9 +521,9 @@ class GofileFile (GofileContent):
         self.download_cnt = None
         self.mimetype = None
         self.server = None
-        self.direct_link = None
         self.page_link = None
         self.md5 = None
+        self.direct_links = []
 
     def _override_from_dict(self, data: dict) -> None:
         self.content_id = data.get("id", self.content_id)
@@ -465,17 +535,13 @@ class GofileFile (GofileContent):
         self.mimetype = data.get("mimetype", self.mimetype)
         self.md5 = data.get("md5", self.md5)
         self.server = data.get("serverChoosen", None)
-        link = data.get("link")
-        if link:
-            self.direct_link = self._get_direct_link_from_link(link)
+        direct_links = data.get("directLinks", [])
+        for link_data in direct_links:
+            GofileFileDirectLink._load_from_dict(link_data, file=self)
+
         self.page_link = data.get("downloadPage", self.page_link) 
 
         self._raw = data
-
-    @staticmethod
-    def _get_direct_link_from_link (link):
-        idx = link.find("download/") + len("download/")-1
-        return link[:idx] + "/direct/" + link[idx+1:]
 
     @staticmethod
     def _load_from_dict(data: dict, client: GofileClient = None):
@@ -484,15 +550,24 @@ class GofileFile (GofileContent):
         file._raw = data
         return file
 
+    def create_direct_link(self, *args, **kwargs):
+        data = self._client.create_file_direct_link(self.content_id, *args, file=self, **kwargs)
+        self.direct_links.append(data)
+        return data
+
     def download(self, out_dir: str = "./") -> str:
         """Downloads file to passed dir (default is working directory). Note: The option directLink
           \needs to be True (Premium)"""
 
-        if self.direct_link:
-            return self._client._download_file_from_direct_link(self.direct_link, out_dir=out_dir)
+        if self.direct_links:
+            return self._client._download_file_from_direct_link(self.direct_links[0].link, out_dir=out_dir)
 
         else:
             raise Exception("Direct link needed - set option directLink=True (only for premium users)") 
+
+
+
+
 
 class GofileFolder (GofileContent):
     children: list[GofileContent]
